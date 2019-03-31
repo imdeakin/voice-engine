@@ -27,18 +27,41 @@ class KWS(Element):
         resource_path = os.path.join(os.path.dirname(snowboydetect.__file__), 'resources')
         common_resource = os.path.join(resource_path, 'common.res')
 
+        tm = type(model)
+        ts = type(sensitivity)
+        if tm is not list:
+            model = [model]
+        if ts is not list:
+            sensitivity = [sensitivity]
+
+        models = []
         for model_path in [resource_path, os.path.join(resource_path, 'models')]:
-            builtin_model = os.path.join(model_path, '{}.umdl'.format(model))
-            if os.path.isfile(builtin_model):
-                model = builtin_model
-                break
-        if model == 'alexa':
-            alexa_model = os.path.join(resource_path, 'alexa', 'alexa_02092017.umdl')
-            if os.path.isfile(alexa_model):
-                model = alexa_model
+            for model_name in model:
+                if model == 'alexa':
+                    alexa_model = os.path.join(resource_path, 'alexa', 'alexa_02092017.umdl')
+                    if os.path.isfile(alexa_model):
+                        models.append(alexa_model)
+                else
+                    builtin_model = os.path.join(model_path, '{}.umdl'.format(model_name))
+                    if os.path.isfile(builtin_model):
+                        models.append(builtin_model)
+        model_str = ','.join(models)
 
         print("KWS============KWS===============KWS============KWS==========KWS");
-        self.detector = snowboydetect.SnowboyDetect(common_resource.encode(), model.encode(), sensitivity.encode())
+        self.detector = snowboydetect.SnowboyDetect(common_resource.encode(), model_str.encode())
+
+        self.num_hotwords = self.detector.NumHotwords()
+
+        if self.num_hotwords > 1 and len(sensitivity) == 1:
+            sensitivity = sensitivity*self.num_hotwords
+        if len(sensitivity) != 0:
+            assert self.num_hotwords == len(sensitivity), \
+                "number of hotwords in decoder_model (%d) and sensitivity " \
+                "(%d) does not match" % (self.num_hotwords, len(sensitivity))
+        sensitivity_str = ",".join([str(t) for t in sensitivity])
+        if len(sensitivity) != 0:
+            self.detector.SetSensitivity(sensitivity_str.encode())
+
         # self.detector.SetAudioGain(1)
         # self.detector.ApplyFrontend(True)
         # self.detector.SetSensitivity(str(sensitivity).encode())
