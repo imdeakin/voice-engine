@@ -41,7 +41,7 @@ class KWS(Element):
                     alexa_model = os.path.join(resource_path, 'alexa', 'alexa_02092017.umdl')
                     if os.path.isfile(alexa_model):
                         models.append(alexa_model)
-                else
+                else:
                     builtin_model = os.path.join(model_path, '{}.umdl'.format(model_name))
                     if os.path.isfile(builtin_model):
                         models.append(builtin_model)
