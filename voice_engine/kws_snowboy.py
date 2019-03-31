@@ -36,10 +36,10 @@ class KWS(Element):
             alexa_model = os.path.join(resource_path, 'alexa', 'alexa_02092017.umdl')
             if os.path.isfile(alexa_model):
                 model = alexa_model
-        self.detector = snowboydetect.SnowboyDetect(common_resource.encode(), model.encode())
+        self.detector = snowboydetect.SnowboyDetect(common_resource.encode(), model.encode(), sensitivity.encode())
         # self.detector.SetAudioGain(1)
         # self.detector.ApplyFrontend(True)
-        self.detector.SetSensitivity(str(sensitivity).encode())
+        # self.detector.SetSensitivity(str(sensitivity).encode())
 
         self.queue = queue.Queue()
         self.done = False
